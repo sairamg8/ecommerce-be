@@ -1,5 +1,5 @@
-import { AppError } from "@/types";
-import { Request, Response, NextFunction } from "express";
+import { AppError, ValidationError } from "@/utils/AppError";
+import { NextFunction, Request, Response } from "express";
 
 export const errorHandler = (
   err: AppError,
@@ -12,11 +12,15 @@ export const errorHandler = (
 
   const isDevelopment = process.env.NODE_ENV !== "production";
 
-  console.log(err);
+  console.log(
+    err,
+    "=========================== From Error Handler =============================="
+  );
 
   res.status(statusCode).json({
     success: false,
-    message: err.message,
+    message: message,
+    ...(err instanceof ValidationError && { errors: err.errors }),
     ...(isDevelopment && { stack: err.stack }),
   });
 };

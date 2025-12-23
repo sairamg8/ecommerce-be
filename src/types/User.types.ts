@@ -1,7 +1,7 @@
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 
-export type IUser = {
-  _id: string;
+export interface IUser extends Document {
+  _id: Types.ObjectId;
   email: string;
   password: string;
   firstName: string;
@@ -15,18 +15,11 @@ export type IUser = {
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
   role: "admin" | "merchant" | "user";
-} & Document;
-
-export interface SignupDTO {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
 }
 
 export interface AuthResponse {
   data: {
-    id: string;
+    id: Types.ObjectId;
     email: string;
     firstName: string;
     lastName: string;
@@ -38,5 +31,5 @@ export interface AuthResponse {
 
 export interface JWTPayload {
   email: string;
-  userId: string;
+  userId: Types.ObjectId;
 }

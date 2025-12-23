@@ -10,4 +10,13 @@ export class AuthController {
       data: user,
     });
   }
+
+  static async signin(req: Request, res: Response, next: NextFunction) {
+    const user = await AuthService.Signin(req.body);
+
+    res.json({
+      message: "User Signin Successful",
+      data: user,
+    });
+  }
 }

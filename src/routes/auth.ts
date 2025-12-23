@@ -1,10 +1,11 @@
 import { AuthController } from "@/controller/auth/singup";
-import { validate } from "@/middlware/auth.validation";
-import { SignupSchema } from "@/utils/validation";
+import { validate } from "@/middleware/auth.validation";
+import { SigninSchema, SignupSchema } from "@/utils/validation";
 import e from "express";
 
 const Auth_Route = e.Router();
 
 Auth_Route.post("/signup", validate(SignupSchema), AuthController.signup);
+Auth_Route.post("/login", validate(SigninSchema), AuthController.signin);
 
 export default Auth_Route;

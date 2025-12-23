@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import health_route from "./routes/health";
 import Auth_Route from "./routes/auth";
 import { connectDB } from "./config/db";
-import { AppError } from "./types";
+import { errorHandler } from "./middleware/errorHandler";
 
 dotenv.config();
 
@@ -17,13 +17,14 @@ server.use("/auth", Auth_Route);
 
 // Not Found Error
 server.use((req, res, next) => {
-  const error = new Error(`Route ${req.originalUrl} not found`) as AppError;
-  error.statusCode = 404;
-  next(error);
+  res.status(404).json({
+    message: `Route ${req.originalUrl} not found`,
+  });
 });
 
-connectDB()
-  .then(() =>
-    server.listen(port, () => console.log(`Server Started on ${port}`))
-  )
-  .catch(console.log);
+// Global Error Handler
+server.use(errorHandler);
+
+connectDB().then(() =>
+  server.listen(port, () => console.log(`Server Started on ${port}`))
+);
