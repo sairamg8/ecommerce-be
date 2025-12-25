@@ -15,6 +15,7 @@ export interface IUser extends Document {
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
   role: "admin" | "merchant" | "user";
+  getResetPasswordToken(): Promise<ForgotPasswordRes>;
 }
 
 export interface AuthResponse {
@@ -32,4 +33,15 @@ export interface AuthResponse {
 export interface JWTPayload {
   email: string;
   userId: Types.ObjectId;
+}
+
+export interface ForgotPasswordRes {
+  success: boolean;
+  data: {
+    message: string;
+  };
+}
+
+export interface ResetPasswordRes extends AuthResponse {
+  success: boolean;
 }

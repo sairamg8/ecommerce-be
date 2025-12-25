@@ -1,6 +1,7 @@
 import mongoose, { Model, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 import { IUser } from "@/types/User.types";
+import crypto from "crypto";
 
 const userSchema = new Schema<IUser>(
   {
@@ -73,6 +74,18 @@ userSchema.methods.comparePassword = async function (
   } catch (err) {
     return false;
   }
+};
+
+userSchema.methods.getResetPasswordToken = function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  this.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
 };
 
 export const User = mongoose.model<IUser>("User", userSchema);

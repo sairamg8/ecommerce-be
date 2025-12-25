@@ -13,6 +13,7 @@ export const errorHandler = (
   const isDevelopment = process.env.NODE_ENV !== "production";
 
   console.log(
+    "=========================== From Error Handler ==============================",
     err,
     "=========================== From Error Handler =============================="
   );

@@ -19,4 +19,29 @@ export class AuthController {
       data: user,
     });
   }
+
+  static async forgotPassword(req: Request, res: Response, next: NextFunction) {
+    await AuthService.ForgotPassword(req.body);
+
+    res.json({
+      message: "Reset Password Mail sent, please check your email",
+    });
+  }
+
+  static async resetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      let data: unknown = {
+        message: "password success",
+      };
+
+      data = await AuthService.ResetPassword(req.body);
+
+      res.json(data);
+    } catch (err) {
+      const error = err as unknown as Error;
+      res.json({
+        message: error.message,
+      });
+    }
+  }
 }
