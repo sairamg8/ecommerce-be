@@ -21,7 +21,7 @@ export const errorHandler = (
   res.status(statusCode).json({
     success: false,
     message: message,
-    ...(err instanceof ValidationError && { errors: err.errors }),
+    ...(err instanceof ValidationError && { errors: err.data }),
     ...(isDevelopment && { stack: err.stack }),
   });
 };

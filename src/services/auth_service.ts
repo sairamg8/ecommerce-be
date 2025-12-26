@@ -5,7 +5,7 @@ import {
   JWTPayload,
   ResetPasswordRes,
 } from "@/types/User.types";
-import { AppError } from "@/utils/AppError";
+import { AppError, BadRequestError, UnauthorizedError } from "@/utils/AppError";
 import { generateAccessToken, generateRefreshToken } from "@/utils/jwt";
 import {
   ForgotPasswordT,
@@ -60,7 +60,7 @@ export class AuthService {
     const isUserExist = await User.findOne({ email: data.email });
 
     if (isUserExist)
-      throw new AppError("User already exist with this email", 400);
+      throw new BadRequestError("User already exist with this email", 400);
 
     const user = await User.create(data);
 
@@ -93,10 +93,12 @@ export class AuthService {
     const isUserExist = await User.findOne({ email: data.email }).select(
       "+password"
     );
-    if (!isUserExist) throw new AppError("Email / Password Incorrect", 401);
+    if (!isUserExist)
+      throw new UnauthorizedError("Email / Password Incorrect", 401);
 
     const isPasswordMatch = await isUserExist.comparePassword(data.password);
-    if (!isPasswordMatch) throw new AppError("Email / Password Incorrect", 401);
+    if (!isPasswordMatch)
+      throw new UnauthorizedError("Email / Password Incorrect", 401);
 
     const accessToken = generateAccessToken({
       email: isUserExist?.email,
@@ -126,7 +128,7 @@ export class AuthService {
   ): Promise<ForgotPasswordRes> {
     const { email } = data;
 
-    if (!email) throw new AppError(`Please Provide an email`);
+    if (!email) throw new BadRequestError("Please Provide an email");
 
     const isUserExist = await User.findOne({
       email: email.toLocaleLowerCase(),
@@ -155,12 +157,7 @@ export class AuthService {
     const { confirmPassword, password, resetToken } = data;
 
     if (!password || !confirmPassword) {
-      return {
-        success: false,
-        data: {
-          message: "Please provide password and confirm password",
-        },
-      };
+      throw new AppError("Please provide password and confirm password", 400);
     }
 
     console.log(password, confirmPassword, "Auth Service");
@@ -183,11 +180,7 @@ export class AuthService {
       resetPasswordExpires: { $gt: Date.now() },
     });
 
-    if (!user)
-      return {
-        success: false,
-        message: "Invalid or expired reset token",
-      };
+    if (!user) throw new AppError("Invalid or expired reset token", 400);
 
     user.password = password;
     user.resetPasswordToken = undefined;
