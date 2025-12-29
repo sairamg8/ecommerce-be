@@ -4,6 +4,11 @@ import health_route from "./routes/health";
 import Auth_Route from "./routes/auth";
 import { connectDB } from "./config/db";
 import { errorHandler } from "./middleware/errorHandler";
+import Category_Route from "./routes/category";
+import { initializeAssociations } from "./db/models/associations";
+import ProductRouter from "./routes/product";
+
+initializeAssociations();
 
 dotenv.config();
 
@@ -14,6 +19,8 @@ server.use(e.json());
 server.use(e.urlencoded({ extended: false }));
 server.use("/health", health_route);
 server.use("/auth", Auth_Route);
+server.use("/categories", Category_Route);
+server.use("/products", ProductRouter);
 
 // Not Found Error
 server.use((req, res, next) => {

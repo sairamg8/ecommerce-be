@@ -5,12 +5,20 @@ class Category extends Model {
   public id!: number;
   public name!: string;
   public slug!: string;
-  public description?: string;
-  public image_url?: string;
+  public description!: string;
+  public image_url!: string;
   public is_active!: boolean;
-  public created_at?: Date;
-  public updated_at?: Date;
-  public deleted_at?: Date;
+
+  public created_at!: Date;
+  public updated_at!: Date;
+  public deleted_at!: Date | null;
+
+  static associate(models: any) {
+    Category.hasMany(models.Product, {
+      foreignKey: "category_id",
+      as: "products",
+    });
+  }
 }
 
 Category.init(
@@ -20,6 +28,7 @@ Category.init(
       allowNull: false,
       unique: true,
       autoIncrement: true,
+      primaryKey: true,
     },
     name: {
       type: DataTypes.STRING(125),

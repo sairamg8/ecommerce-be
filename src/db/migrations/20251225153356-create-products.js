@@ -50,7 +50,6 @@ module.exports = {
       sku: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        unique: true,
         comment: "Stock keeping in unit"
       },
       stock_quantity: {

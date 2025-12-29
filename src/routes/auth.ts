@@ -1,5 +1,5 @@
 import { AuthController } from "@/controller/auth/singup";
-import { validate } from "@/middleware/auth.validation";
+import { validate } from "@/middleware/req.validation";
 import {
   ForgotPassword,
   ResetPassword,
