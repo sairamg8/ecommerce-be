@@ -3,13 +3,18 @@ import { validate } from "@/middleware/req.validation";
 import {
   AddProductSchema,
   DeleteProductSchema,
+  FetchAllProductsSchema,
   UpdateProductSchema,
 } from "@/services/product/product_schema";
 import e from "express";
 
 const ProductRouter = e.Router();
 
-ProductRouter.get("/", ProductController.FetchAllProducts);
+ProductRouter.get(
+  "/",
+  validate(FetchAllProductsSchema),
+  ProductController.FetchAllProducts
+);
 ProductRouter.post(
   "/",
   validate(AddProductSchema),

@@ -160,6 +160,15 @@ Product.init(
     sequelize,
     timestamps: true,
     underscored: true,
+    indexes: [
+      { fields: ["category_id"] },
+      { fields: ["is_active"] },
+      { fields: ["is_featured"] },
+      { fields: ["price"] },
+      { fields: ["created_at"] },
+      { fields: ["slug"], unique: true },
+      { fields: ["sku"], unique: true },
+    ],
   }
 );
 

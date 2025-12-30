@@ -1,13 +1,18 @@
 import { Request, Response, NextFunction } from "express";
 import { ProductService } from "@/services/product/product_service";
+import { FetchAllProductsSchema } from "@/services/product/product_schema";
 
 export class ProductController {
   static async FetchAllProducts(
-    Req: Request,
+    req: Request,
     res: Response,
     next: NextFunction
   ) {
-    const data = await ProductService.FetchAllProducts();
+    const { query } = FetchAllProductsSchema.parse({
+      query: req.query,
+    });
+
+    const data = await ProductService.FetchAllProducts(query);
 
     res.send({
       data,

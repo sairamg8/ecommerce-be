@@ -41,3 +41,24 @@ export const DeleteProductSchema = z.object({
     force: z.coerce.boolean(),
   }),
 });
+
+export const FetchAllProductsSchema = z.object({
+  query: z.object({
+    page: z.coerce.number().int().positive().optional().default(1),
+    limit: z.coerce.number().int().positive().optional().default(5),
+    sortBy: z.string().optional(),
+    sortOrder: z.enum(["asc", "desc"]).optional().default("desc"),
+    search: z.string().optional(),
+    category_id: z.string().optional(),
+    is_active: z
+      .enum(["true", "false"])
+      .transform((val) => val === "true")
+      .optional(),
+    is_featured: z
+      .enum(["true", "false"])
+      .transform((val) => val === "true")
+      .optional(),
+    min_price: z.coerce.number().optional(),
+    max_price: z.coerce.number().optional(),
+  }),
+});
