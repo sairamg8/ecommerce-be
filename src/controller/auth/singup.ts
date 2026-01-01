@@ -1,9 +1,13 @@
-import { AuthService } from "@/services/auth_service";
+import { AuthService } from "@/services/user/auth_service";
+import { SignupSchema } from "@/utils/validation";
 import { Request, Response, NextFunction } from "express";
 
 export class AuthController {
   static async signup(req: Request, res: Response, next: NextFunction) {
-    const user = await AuthService.Signup(req.body);
+    const { body } = SignupSchema.parse({
+      body: req.body,
+    });
+    const user = await AuthService.Signup(body);
 
     res.status(201).json({
       message: "User Signup Successful",

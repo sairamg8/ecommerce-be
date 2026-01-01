@@ -1,30 +1,10 @@
-import { Document, Types } from "mongoose";
-
-export interface IUser extends Document {
-  _id: Types.ObjectId;
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  isVerified: boolean;
-  verificationToken?: string;
-  resetPasswordToken?: string;
-  resetPasswordExpires?: Date;
-  refreshTokens: string[];
-  createdAt: Date;
-  updatedAt: Date;
-  comparePassword(candidatePassword: string): Promise<boolean>;
-  role: "admin" | "merchant" | "user";
-  getResetPasswordToken(): Promise<ForgotPasswordRes>;
-}
-
 export interface AuthResponse {
   data: {
-    id: Types.ObjectId;
+    id: number;
     email: string;
-    firstName: string;
-    lastName: string;
-    isVerified: boolean;
+    first_name: string;
+    last_name: string;
+    is_verified: boolean;
   };
   accessToken: string;
   refreshToken: string;
@@ -32,7 +12,7 @@ export interface AuthResponse {
 
 export interface JWTPayload {
   email: string;
-  userId: Types.ObjectId;
+  userId: number;
 }
 
 export interface ForgotPasswordRes {

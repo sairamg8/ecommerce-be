@@ -1,9 +1,7 @@
-import { User } from "@/models/user/User";
 import {
   AuthResponse,
   ForgotPasswordRes,
   JWTPayload,
-  ResetPasswordRes,
 } from "@/types/User.types";
 import { AppError, BadRequestError, UnauthorizedError } from "@/utils/AppError";
 import { generateAccessToken, generateRefreshToken } from "@/utils/jwt";
@@ -15,6 +13,8 @@ import {
 } from "@/utils/validation";
 import { Resend } from "resend";
 import crypto from "crypto";
+import User from "@/db/models/user";
+import { Op } from "sequelize";
 
 const resend = new Resend("re_B6D6N4XQ_D7HWs7tn2BUQ2dga8tZko5BM");
 
@@ -36,7 +36,9 @@ const sendResetPasswordEmail = async (email: string, url: string) => {
   };
 
   try {
-    await resend.emails.send(msg);
+    const response = await resend.emails.send(msg);
+
+    console.log(response, "Response while sending email");
 
     return {
       success: true,
@@ -45,6 +47,7 @@ const sendResetPasswordEmail = async (email: string, url: string) => {
       },
     };
   } catch (error: unknown) {
+    console.log(error, "Error while sending Email");
     const err = error as Error;
     return {
       success: false,
@@ -57,7 +60,7 @@ const sendResetPasswordEmail = async (email: string, url: string) => {
 
 export class AuthService {
   static async Signup(data: SingUpT): Promise<AuthResponse> {
-    const isUserExist = await User.findOne({ email: data.email });
+    const isUserExist = await User.findOne({ where: { email: data.email } });
 
     if (isUserExist)
       throw new BadRequestError("User already exist with this email", 400);
@@ -66,23 +69,23 @@ export class AuthService {
 
     const payload: JWTPayload = {
       email: user.email,
-      userId: user._id,
+      userId: user.id,
     };
 
     const token = generateAccessToken(payload);
     const refresh = generateRefreshToken(payload);
 
-    user.refreshTokens.push(refresh);
+    user.refresh_tokens.push(refresh);
 
     await user.save();
 
     return {
       data: {
-        id: user._id,
+        id: user.id,
         email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        isVerified: user.isVerified,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        is_verified: user.is_verified,
       },
       accessToken: token,
       refreshToken: refresh,
@@ -90,9 +93,8 @@ export class AuthService {
   }
 
   static async Signin(data: SingInT): Promise<AuthResponse> {
-    const isUserExist = await User.findOne({ email: data.email }).select(
-      "+password"
-    );
+    const isUserExist = await User.findOne({ where: { email: data.email } });
+
     if (!isUserExist)
       throw new UnauthorizedError("Email / Password Incorrect", 401);
 
@@ -102,21 +104,21 @@ export class AuthService {
 
     const accessToken = generateAccessToken({
       email: isUserExist?.email,
-      userId: isUserExist._id,
+      userId: isUserExist.id,
     });
 
     const refreshToken = generateRefreshToken({
       email: isUserExist?.email,
-      userId: isUserExist._id,
+      userId: isUserExist.id,
     });
 
     return {
       data: {
         email: isUserExist.email,
-        firstName: isUserExist.firstName,
-        id: isUserExist._id,
-        isVerified: isUserExist.isVerified,
-        lastName: isUserExist.lastName,
+        first_name: isUserExist.first_name,
+        id: isUserExist.id,
+        is_verified: isUserExist.is_verified,
+        last_name: isUserExist.last_name,
       },
       accessToken,
       refreshToken,
@@ -131,7 +133,7 @@ export class AuthService {
     if (!email) throw new BadRequestError("Please Provide an email");
 
     const isUserExist = await User.findOne({
-      email: email.toLocaleLowerCase(),
+      where: { email: email.toLocaleLowerCase() },
     });
 
     if (!isUserExist) {
@@ -143,8 +145,8 @@ export class AuthService {
       };
     }
 
-    const resetToken = await isUserExist.getResetPasswordToken();
-    await isUserExist.save({ validateBeforeSave: false });
+    const resetToken = isUserExist.getResetPasswordToken();
+    await isUserExist.save();
 
     const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
 
@@ -160,8 +162,6 @@ export class AuthService {
       throw new AppError("Please provide password and confirm password", 400);
     }
 
-    console.log(password, confirmPassword, "Auth Service");
-
     if (password !== confirmPassword) {
       return {
         success: false,
@@ -175,16 +175,21 @@ export class AuthService {
       .createHash("sha256")
       .update(resetToken)
       .digest("hex");
+
+    console.log(resetPasswordToken, resetToken, "From Auth Service");
+
     const user = await User.findOne({
-      resetPasswordToken,
-      resetPasswordExpires: { $gt: Date.now() },
+      where: {
+        reset_password_token: resetPasswordToken,
+        reset_password_expires: { [Op.gt]: Date.now() },
+      },
     });
 
     if (!user) throw new AppError("Invalid or expired reset token", 400);
 
     user.password = password;
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
+    user.reset_password_token = null;
+    user.reset_password_expires = null;
     await user.save();
 
     return {

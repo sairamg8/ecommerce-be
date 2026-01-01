@@ -1,4 +1,5 @@
 import { ProductController } from "@/controller/product";
+import { DetailsController } from "@/controller/product/details";
 import { validate } from "@/middleware/req.validation";
 import {
   AddProductSchema,
@@ -30,4 +31,6 @@ ProductRouter.delete(
   validate(DeleteProductSchema),
   ProductController.DeleteProduct
 );
+
+ProductRouter.get("/details/:identifier", DetailsController.getDetails);
 export default ProductRouter;
