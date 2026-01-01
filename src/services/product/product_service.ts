@@ -73,11 +73,14 @@ export class ProductService {
       include: [
         {
           model: Category,
-          as: "categories",
+          as: "category",
+          attributes: {
+            exclude: ["deleted_at"],
+          },
         },
       ],
       attributes: {
-        exclude: ["category_id"],
+        exclude: ["category_id", "deleted_at"],
       },
     });
     return {

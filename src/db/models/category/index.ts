@@ -107,6 +107,9 @@ Category.init(
     timestamps: true,
     underscored: true,
     indexes: [{ fields: ["name"] }, { fields: ["slug", "description"] }],
+    createdAt: "created_at", // ← add these
+    updatedAt: "updated_at",
+    deletedAt: "deleted_at",
   }
 );
 

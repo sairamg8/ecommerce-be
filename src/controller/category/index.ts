@@ -1,3 +1,4 @@
+import { CategorySchema } from "@/services/category/category_schema";
 import { CategoryService } from "@/services/category/category_service";
 import { UpdateCategoryT } from "@/services/category/category_types";
 import { Request, Response, NextFunction } from "express";
@@ -17,7 +18,10 @@ export class Category {
   }
 
   static async createCategory(req: Request, res: Response, next: NextFunction) {
-    const data = await CategoryService.AddNewCategory(req.body, 1);
+    const { body } = CategorySchema.parse({
+      body: req.body,
+    });
+    const data = await CategoryService.AddNewCategory(body, req.userInfo?.id);
     res.json({
       data,
     });

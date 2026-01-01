@@ -7,6 +7,7 @@ import { errorHandler } from "./middleware/errorHandler";
 import Category_Route from "./routes/category";
 import { initializeAssociations } from "./db/models/associations";
 import ProductRouter from "./routes/product";
+import { Authenticate } from "./middleware/auth.middleware";
 
 initializeAssociations();
 
@@ -19,8 +20,8 @@ server.use(e.json());
 server.use(e.urlencoded({ extended: false }));
 server.use("/health", health_route);
 server.use("/auth", Auth_Route);
-server.use("/categories", Category_Route);
-server.use("/products", ProductRouter);
+server.use("/categories", Authenticate, Category_Route);
+server.use("/products", Authenticate, ProductRouter);
 
 // Not Found Error
 server.use((req, res, next) => {

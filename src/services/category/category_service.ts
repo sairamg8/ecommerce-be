@@ -5,11 +5,19 @@ import {
   UpdateCategoryT,
 } from "./category_types";
 import { BadRequestError } from "@/utils/AppError";
+import User from "@/db/models/user";
 
 export class CategoryService {
-  static async FetchAllCategories(): Promise<CategoryResponseT[]> {
-    const response = await Category.findAll({ raw: true });
-    return response;
+  static async FetchAllCategories() {
+    const categories = await Category.findAll({
+      include: {
+        model: User,
+        as: "user",
+        attributes: ["first_name", "email"],
+      },
+    });
+
+    return categories.map((c) => c.toJSON());
   }
 
   static async AddNewCategory(data: NewCategoryT, user_id: number) {

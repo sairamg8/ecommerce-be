@@ -32,7 +32,10 @@ Product.init(
     category_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "category_id",
+      references: {
+        key: "id",
+        model: "categories",
+      },
     },
     name: {
       type: DataTypes.STRING,
@@ -169,6 +172,9 @@ Product.init(
       { fields: ["slug"], unique: true },
       { fields: ["sku"], unique: true },
     ],
+    createdAt: "created_at", // ← add these
+    updatedAt: "updated_at",
+    deletedAt: "deleted_at",
   }
 );
 

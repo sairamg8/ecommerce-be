@@ -11,7 +11,6 @@ export interface CategoryResponseT {
   created_at: Date;
   updated_at: Date;
   deleted_at: Date | null;
-  user_id: number;
 }
 
 export type NewCategoryT = z.infer<typeof CategorySchema>["body"];

@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { ProductService } from "@/services/product/product_service";
-import { FetchAllProductsSchema } from "@/services/product/product_schema";
+import {
+  AddProductSchema,
+  FetchAllProductsSchema,
+} from "@/services/product/product_schema";
 
 export class ProductController {
   static async FetchAllProducts(
@@ -20,7 +23,9 @@ export class ProductController {
   }
 
   static async AddProduct(req: Request, res: Response, next: NextFunction) {
-    const data = await ProductService.AddProduct(req.body);
+    const { body } = await AddProductSchema.parseAsync({ body: req.body });
+    const updatedData = body.map((p) => ({ ...p, user_id: req.userInfo.id }));
+    const data = await ProductService.AddProduct(updatedData);
 
     res.json({
       data,

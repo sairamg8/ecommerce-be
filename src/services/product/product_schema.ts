@@ -7,7 +7,7 @@ const ProductBodySchema = z.object({
   description: z.string().optional(),
   short_description: z.string().optional(),
   price: z.number("A Valid Price required"),
-  sale_price: z.number("A valid sale price required"),
+  sale_price: z.coerce.number("A valid sale price required"),
   sku: z.number("A Valid number required"),
   stock_quantity: z.number(" Stock quantity should be a valid number "),
   image_url: z.url("A Valid URL required").optional(),

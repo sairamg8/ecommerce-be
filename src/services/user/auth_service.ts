@@ -36,9 +36,7 @@ const sendResetPasswordEmail = async (email: string, url: string) => {
   };
 
   try {
-    const response = await resend.emails.send(msg);
-
-    console.log(response, "Response while sending email");
+    await resend.emails.send(msg);
 
     return {
       success: true,
@@ -47,7 +45,6 @@ const sendResetPasswordEmail = async (email: string, url: string) => {
       },
     };
   } catch (error: unknown) {
-    console.log(error, "Error while sending Email");
     const err = error as Error;
     return {
       success: false,
