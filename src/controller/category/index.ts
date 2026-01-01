@@ -17,7 +17,7 @@ export class Category {
   }
 
   static async createCategory(req: Request, res: Response, next: NextFunction) {
-    const data = await CategoryService.AddNewCategory(req.body);
+    const data = await CategoryService.AddNewCategory(req.body, 1);
     res.json({
       data,
     });

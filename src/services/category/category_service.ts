@@ -12,8 +12,9 @@ export class CategoryService {
     return response;
   }
 
-  static async AddNewCategory(data: NewCategoryT) {
-    const response = await Category.bulkCreate(data, { validate: true });
+  static async AddNewCategory(data: NewCategoryT, user_id: number) {
+    const updateData = data.map((c) => ({ ...c, user_id }));
+    const response = await Category.bulkCreate(updateData, { validate: true });
     return response.flatMap((c) => c);
   }
 

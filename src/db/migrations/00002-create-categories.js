@@ -49,7 +49,17 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: true,
         defaultValue: null
-      }
+      },
+      user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "users",
+          key: "id"
+        },
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE"
+      },
     })
 
     await queryInterface.addIndex("categories", ["slug"]);

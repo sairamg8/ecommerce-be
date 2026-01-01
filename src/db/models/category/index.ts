@@ -1,24 +1,28 @@
 import { sequelize } from "@/config/db";
-import { DataTypes, Model } from "sequelize";
+import {
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from "sequelize";
 
-class Category extends Model {
-  public id!: number;
-  public name!: string;
-  public slug!: string;
-  public description!: string;
-  public image_url!: string;
-  public is_active!: boolean;
+class Category extends Model<
+  InferAttributes<Category>,
+  InferCreationAttributes<Category>
+> {
+  declare id: CreationOptional<number>;
+  declare user_id: number;
+  declare name: string;
+  declare slug: string;
 
-  public created_at!: Date;
-  public updated_at!: Date;
-  public deleted_at!: Date | null;
+  declare description: CreationOptional<string>;
+  declare image_url: CreationOptional<string>;
+  declare is_active: CreationOptional<boolean>;
 
-  static associate(models: any) {
-    Category.hasMany(models.Product, {
-      foreignKey: "category_id",
-      as: "products",
-    });
-  }
+  declare created_at: CreationOptional<Date>;
+  declare updated_at: CreationOptional<Date>;
+  declare deleted_at: CreationOptional<Date | null>;
 }
 
 Category.init(
@@ -29,6 +33,14 @@ Category.init(
       unique: true,
       autoIncrement: true,
       primaryKey: true,
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        key: "id",
+        model: "users",
+      },
     },
     name: {
       type: DataTypes.STRING(125),
@@ -65,12 +77,27 @@ Category.init(
       type: DataTypes.TEXT,
       allowNull: true,
       defaultValue:
-        "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg",
+        "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder--Glossary.svg",
     },
     is_active: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
       allowNull: false,
+    },
+    created_at: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updated_at: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    deleted_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
     },
   },
   {
@@ -79,6 +106,7 @@ Category.init(
     paranoid: true,
     timestamps: true,
     underscored: true,
+    indexes: [{ fields: ["name"] }, { fields: ["slug", "description"] }],
   }
 );
 
