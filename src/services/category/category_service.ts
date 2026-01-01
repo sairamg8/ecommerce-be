@@ -15,6 +15,7 @@ export class CategoryService {
         as: "user",
         attributes: ["first_name", "email"],
       },
+      order: [["id", "asc"]],
     });
 
     return categories.map((c) => c.toJSON());

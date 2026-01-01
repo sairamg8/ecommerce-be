@@ -14,7 +14,7 @@ export const CategorySchema = z.object({
 });
 
 export const UpdateCategorySchema = z.object({
-  body: CategorySchema.extend({
+  body: CategorySchema.partial().extend({
     is_active: z.boolean().optional(),
   }),
 
