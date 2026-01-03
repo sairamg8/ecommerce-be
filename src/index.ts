@@ -2,12 +2,12 @@ import e from "express";
 import dotenv from "dotenv";
 import health_route from "./routes/health";
 import Auth_Route from "./routes/auth";
-import { connectDB } from "./config/db";
 import { errorHandler } from "./middleware/errorHandler";
 import Category_Route from "./routes/category";
 import { initializeAssociations } from "./db/models/associations";
 import ProductRouter from "./routes/product";
 import { Authenticate } from "./middleware/auth.middleware";
+import Cart_Route from "./routes/cart";
 
 initializeAssociations();
 
@@ -22,6 +22,7 @@ server.use("/health", health_route);
 server.use("/auth", Auth_Route);
 server.use("/categories", Authenticate, Category_Route);
 server.use("/products", Authenticate, ProductRouter);
+server.use("/cart", Authenticate, Cart_Route);
 
 // Not Found Error
 server.use((req, res, next) => {
@@ -33,6 +34,4 @@ server.use((req, res, next) => {
 // Global Error Handler
 server.use(errorHandler);
 
-connectDB().then(() =>
-  server.listen(port, () => console.log(`Server Started on ${port}`))
-);
+server.listen(port, () => console.log(`Server Started on ${port}`));

@@ -10,22 +10,37 @@ module.exports = {
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
 
-    await queryInterface.createTable("comments", {
+    await queryInterface.createTable("cart", {
       id: {
-        autoIncrement: true,
+        type: Sequelize.INTEGER,
+        allowNull: false,
         unique: true,
-        allowNull: false,
-        primaryKey: key,
-        type: Sequelize.INTEGER
+        autoIncrement: true,
+        primaryKey: true
       },
-      comment: {
-        type: Sequelize.TEXT,
+      product_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          key: "id",
+          model: "products"
+        },
         allowNull: false,
-        validate: {
-          notEmpty: {
-            msg: "Empty comment"
-          }
-        }
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE"
+      },
+      quantity: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      user_info: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          key: "id",
+          model: "users"
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE"
       },
       created_at: {
         type: Sequelize.DATE,
@@ -36,19 +51,13 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
-      },
-      deleted_at: {
-        type: Sequelize.DATE,
-        allowNull: true,
-        defaultValue: null
-      },
-      user_info: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          mode: ""
-        }
       }
+    })
+
+    await queryInterface.addConstraint("cart", {
+      fields: ["user_info", "product_id"],
+      type: "unique",
+      name: "unique_user_product"
     })
   },
 
@@ -59,5 +68,7 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
+
+    await queryInterface.dropTable("cart", { cascade: true })
   }
 };
