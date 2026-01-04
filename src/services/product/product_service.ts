@@ -1,16 +1,23 @@
 import Product from "@/db/models/product";
-import { AddProductT, PaginatedT } from "./product_types";
+import {
+  AddProductT,
+  AddProductWithUserT,
+  PaginatedT,
+  UpdateProductT,
+} from "./product_types";
 import { BadRequestError } from "@/utils/AppError";
 import Category from "@/db/models/category";
 import { Op, WhereOptions } from "sequelize";
 
 export class ProductService {
-  static async FetchAllProducts(params: PaginatedT) {
+  static async FetchAllProducts(params: PaginatedT, user_id: number) {
     const page = Math.max(1, params.page ?? 1);
     const limit = Math.min(100, Math.max(1, params.limit ?? 20));
     const offset = (page - 1) * limit;
 
     const where: WhereOptions = {};
+
+    where.user_id = user_id;
 
     if (params?.category_id) {
       where.category_id = params.category_id;
@@ -92,20 +99,37 @@ export class ProductService {
     };
   }
 
-  static async AddProduct(data: AddProductT) {
-    const response = await Product.bulkCreate(data, { validate: true });
+  static async AddProduct(data: AddProductWithUserT, id: number) {
+    const response = await Product.bulkCreate(data, {
+      validate: true,
+    });
     return response.flatMap((m) => m);
   }
 
-  static async UpdateProduct(id: number, data: AddProductT) {
-    const product = await Product.findByPk(id);
+  static async UpdateProduct(
+    id: number,
+    data: UpdateProductT,
+    user_id: number
+  ) {
+    const product = await Product.findOne({
+      where: {
+        id,
+        user_id: user_id,
+      },
+    });
     if (!product) throw new BadRequestError("InValid Product ID Supplied");
-    const update = await product.update(data);
+    const update = await product.update({ ...data });
     return update.toJSON();
   }
 
-  static async DeleteProduct(id: number, force: boolean) {
-    const response = await Product.findByPk(id, { paranoid: !force });
+  static async DeleteProduct(id: number, force: boolean, user_id: number) {
+    const response = await Product.findOne({
+      where: {
+        id: id,
+        user_id,
+      },
+      paranoid: !force,
+    });
 
     if (!response)
       throw new BadRequestError("Unable to find product with provided ID");

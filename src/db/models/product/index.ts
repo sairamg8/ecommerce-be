@@ -1,23 +1,33 @@
-import { DataTypes, Model } from "sequelize";
+import {
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from "sequelize";
 import { sequelize } from "@/config/db";
 
-class Product extends Model {
-  public id!: number;
-  public category_id!: number;
-  public name!: string;
-  public slug!: string;
-  public description?: string;
-  public short_description?: string;
-  public price!: number;
-  public sale_price!: number;
-  public sku!: number;
-  public stock_quantity!: number;
-  public image_url?: string;
-  public is_active!: boolean;
-  public is_featured!: boolean;
-  public created_at!: Date;
-  public updated_at!: Date;
-  public deleted_at!: Date | null;
+class Product extends Model<
+  InferAttributes<Product>,
+  InferCreationAttributes<Product>
+> {
+  declare id: CreationOptional<number>;
+  declare category_id: CreationOptional<number>;
+  declare name: CreationOptional<string>;
+  declare slug: CreationOptional<string>;
+  declare description: CreationOptional<string>;
+  declare short_description: CreationOptional<string>;
+  declare price: CreationOptional<number>;
+  declare sale_price: CreationOptional<number>;
+  declare sku: CreationOptional<number>;
+  declare stock_quantity: CreationOptional<number>;
+  declare image_url: CreationOptional<string>;
+  declare is_active: CreationOptional<boolean>;
+  declare is_featured: CreationOptional<boolean>;
+  declare created_at: CreationOptional<Date>;
+  declare updated_at: CreationOptional<Date>;
+  declare deleted_at: CreationOptional<Date | null>;
+  declare user_id: number;
 }
 
 Product.init(
@@ -28,6 +38,13 @@ Product.init(
       autoIncrement: true,
       unique: true,
       primaryKey: true,
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        key: "id",
+        model: "users",
+      },
     },
     category_id: {
       type: DataTypes.INTEGER,
@@ -95,7 +112,7 @@ Product.init(
       },
       get() {
         const value = this.getDataValue("price");
-        return value ? parseFloat(value) : null;
+        return value ? parseFloat(String(value)) : null;
       },
     },
     sale_price: {
@@ -108,7 +125,7 @@ Product.init(
       },
       get() {
         const value = this.getDataValue("sale_price");
-        return value ? parseFloat(value) : null;
+        return value ? parseFloat(String(value)) : null;
       },
     },
     sku: {
@@ -141,6 +158,7 @@ Product.init(
     is_active: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
+      defaultValue: false,
       validate: {
         notNull: {
           msg: "Is Active should't be null",
@@ -150,11 +168,27 @@ Product.init(
     is_featured: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
+      defaultValue: false,
       validate: {
         notNull: {
           msg: "Is Featured should't be null",
         },
       },
+    },
+    created_at: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updated_at: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    deleted_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
     },
   },
   {

@@ -1,9 +1,14 @@
 import Cart from "@/db/models/cart";
 import { AddProductToCartT, UpdateProductToCartT } from "./cart_types";
 import { NotFoundError } from "@/utils/AppError";
+import Product from "@/db/models/product";
 
 export class CartService {
   static async CreateItemsInCart(data: AddProductToCartT, id: number) {
+    const isProductAvailable = await Product.findByPk(data.product_id);
+    if (!isProductAvailable)
+      throw new NotFoundError(`The item you looking for no longer exists`);
+
     const response = await Cart.create({ ...data, user_info: id });
     return response.toJSON();
   }

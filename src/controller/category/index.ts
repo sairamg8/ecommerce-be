@@ -1,4 +1,8 @@
-import { CategorySchema } from "@/services/category/category_schema";
+import {
+  CategorySchema,
+  DeleteCategorySchema,
+  UpdateCategorySchema,
+} from "@/services/category/category_schema";
 import { CategoryService } from "@/services/category/category_service";
 import { UpdateCategoryT } from "@/services/category/category_types";
 import { Request, Response, NextFunction } from "express";
@@ -9,7 +13,7 @@ export class Category {
     res: Response,
     next: NextFunction
   ) {
-    const data = await CategoryService.FetchAllCategories();
+    const data = await CategoryService.FetchAllCategories(req.userInfo?.id);
 
     res.json({
       data,
@@ -31,9 +35,14 @@ export class Category {
     req: Request<{ id: string }, {}, UpdateCategoryT>,
     res: Response
   ) {
+    const { body, params } = UpdateCategorySchema.parse({
+      body: req.body,
+      params: req.params,
+    });
     const data = await CategoryService.UpdateCategory(
-      parseInt(req.params.id),
-      req.body
+      parseInt(String(params.id)),
+      body,
+      req.userInfo.id
     );
 
     res.json({
@@ -41,12 +50,18 @@ export class Category {
     });
   }
 
-  static async deleteCategory(req: Request<{ id: string }>, res: Response) {
-    const { id } = req.params;
+  static async deleteCategory(req: Request, res: Response) {
+    const { params } = DeleteCategorySchema.parse({
+      params: req.params,
+    });
 
     const force = Boolean(req.query?.force);
 
-    const data = await CategoryService.DeleteCategory(parseInt(id), force);
+    const data = await CategoryService.DeleteCategory(
+      parseInt(params.id),
+      req.userInfo.id,
+      force
+    );
 
     res.json({
       message: data,

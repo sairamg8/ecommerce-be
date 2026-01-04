@@ -8,8 +8,11 @@ import { BadRequestError } from "@/utils/AppError";
 import User from "@/db/models/user";
 
 export class CategoryService {
-  static async FetchAllCategories() {
+  static async FetchAllCategories(user_id: number) {
     const categories = await Category.findAll({
+      where: {
+        user_id,
+      },
       include: {
         model: User,
         as: "user",
@@ -27,8 +30,14 @@ export class CategoryService {
     return response.flatMap((c) => c);
   }
 
-  static async UpdateCategory(id: number, data: UpdateCategoryT) {
-    const category = await Category.findByPk(id);
+  static async UpdateCategory(
+    id: number,
+    data: UpdateCategoryT,
+    user_id: number
+  ) {
+    const category = await Category.findOne({
+      where: { id, user_id },
+    });
 
     if (!category)
       throw new BadRequestError("Unable to find category with specified data");
@@ -37,8 +46,15 @@ export class CategoryService {
     return category.toJSON();
   }
 
-  static async DeleteCategory(id: number, force?: boolean): Promise<string> {
-    const category = await Category.findByPk(id, { paranoid: !force });
+  static async DeleteCategory(
+    id: number,
+    user_id: number,
+    force?: boolean
+  ): Promise<string> {
+    const category = await Category.findOne({
+      where: { id, user_id },
+      paranoid: !force,
+    });
 
     if (!category) {
       throw new BadRequestError("Unable to find category with specified id");

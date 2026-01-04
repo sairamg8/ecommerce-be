@@ -20,7 +20,7 @@ export const AddProductSchema = z.object({
 });
 
 export const UpdateProductSchema = z.object({
-  body: ProductBodySchema,
+  body: ProductBodySchema.partial(),
   params: z.object({
     id: z.coerce
       .number()

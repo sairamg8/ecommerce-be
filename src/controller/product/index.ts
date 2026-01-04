@@ -3,6 +3,7 @@ import { ProductService } from "@/services/product/product_service";
 import {
   AddProductSchema,
   FetchAllProductsSchema,
+  UpdateProductSchema,
 } from "@/services/product/product_schema";
 
 export class ProductController {
@@ -15,7 +16,7 @@ export class ProductController {
       query: req.query,
     });
 
-    const data = await ProductService.FetchAllProducts(query);
+    const data = await ProductService.FetchAllProducts(query, req.userInfo.id);
 
     res.send({
       data,
@@ -25,7 +26,7 @@ export class ProductController {
   static async AddProduct(req: Request, res: Response, next: NextFunction) {
     const { body } = await AddProductSchema.parseAsync({ body: req.body });
     const updatedData = body.map((p) => ({ ...p, user_id: req.userInfo.id }));
-    const data = await ProductService.AddProduct(updatedData);
+    const data = await ProductService.AddProduct(updatedData, req.userInfo.id);
 
     res.json({
       data,
@@ -37,9 +38,14 @@ export class ProductController {
     res: Response,
     next: NextFunction
   ) {
+    const { body, params } = UpdateProductSchema.parse({
+      body: req.body,
+      params: req.params,
+    });
     const data = await ProductService.UpdateProduct(
-      parseInt(req.params.id),
-      req.body
+      parseInt(String(params.id)),
+      body,
+      req.userInfo.id
     );
 
     res.json({
@@ -52,7 +58,8 @@ export class ProductController {
 
     const data = await ProductService.DeleteProduct(
       parseInt(req.params.id),
-      force
+      force,
+      req.userInfo.id
     );
 
     res.json({

@@ -1,17 +1,11 @@
+import { UserSchema } from "@/controller/user/user.schema";
 import { z } from "zod";
 
 export const SignupSchema = z.object({
-  body: z.object({
-    first_name: z.string().min(2),
-    last_name: z.string().min(2),
-    email: z.email(),
-    phone: z.coerce.number(),
-    password: z.string().min(6),
-    role: z.enum(["admin", "merchant", "user"]).optional(),
-    is_verified: z.coerce.boolean().optional(),
-    user_meta_data: z.json().optional(),
-    profile_pic: z.string().optional(),
-  }),
+  body: UserSchema.omit({
+    role: true,
+    is_verified: true,
+  }).strict(),
 });
 export type SingUpT = z.infer<typeof SignupSchema>["body"];
 

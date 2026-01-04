@@ -8,6 +8,7 @@ import { initializeAssociations } from "./db/models/associations";
 import ProductRouter from "./routes/product";
 import { Authenticate } from "./middleware/auth.middleware";
 import Cart_Route from "./routes/cart";
+import User_Route from "./routes/user";
 
 initializeAssociations();
 
@@ -23,6 +24,7 @@ server.use("/auth", Auth_Route);
 server.use("/categories", Authenticate, Category_Route);
 server.use("/products", Authenticate, ProductRouter);
 server.use("/cart", Authenticate, Cart_Route);
+server.use("/user", Authenticate, User_Route);
 
 // Not Found Error
 server.use((req, res, next) => {
