@@ -38,7 +38,8 @@ module.exports = {
       },
       phone: {
         allowNull: true,
-        type: Sequelize.STRING(20)
+        type: Sequelize.STRING(20),
+        unique: true,
       },
       role: {
         allowNull: false,
