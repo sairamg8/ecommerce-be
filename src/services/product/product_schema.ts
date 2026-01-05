@@ -2,6 +2,7 @@ import z from "zod";
 
 const ProductBodySchema = z.object({
   name: z.string("Product name is required"),
+  brand: z.string("Brand name is required"),
   category_id: z.number("Category ID should be a valid number"),
   slug: z.string("Slug is required for friendly UI navigation"),
   description: z.string().optional(),

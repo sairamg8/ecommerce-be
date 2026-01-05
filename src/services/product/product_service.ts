@@ -50,7 +50,7 @@ export class ProductService {
           name: { [Op.iLike]: `%${params.search}%` },
         },
         {
-          short_description: { [Op.iLike]: `%${params.search}%` },
+          description: { [Op.iLike]: `%${params.search}%` },
         },
       ];
     }
@@ -103,7 +103,10 @@ export class ProductService {
     const response = await Product.bulkCreate(data, {
       validate: true,
     });
-    return response.flatMap((m) => m);
+    return {
+      data: response.flatMap((m) => m),
+      message: `Product created successfully`,
+    };
   }
 
   static async UpdateProduct(

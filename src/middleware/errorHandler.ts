@@ -9,7 +9,7 @@ export const errorHandler = (
 ) => {
   const statusCode = err?.statusCode || 500;
   const message = err?.message || "Something went wrong";
-
+  const errorName = err?.name || "UNKNOWN";
   const isDevelopment = process.env.NODE_ENV !== "production";
 
   console.log(
@@ -19,6 +19,7 @@ export const errorHandler = (
   );
 
   res.status(statusCode).json({
+    errorName,
     success: false,
     message: message,
     ...(err instanceof ValidationError && { errors: err.data }),

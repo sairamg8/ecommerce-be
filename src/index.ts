@@ -1,5 +1,6 @@
 import e from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 import health_route from "./routes/health";
 import Auth_Route from "./routes/auth";
 import { errorHandler } from "./middleware/errorHandler";
@@ -16,6 +17,8 @@ dotenv.config();
 
 const server = e();
 const port = process.env.APP_PORT;
+
+server.use(cors());
 
 server.use(e.json());
 server.use(e.urlencoded({ extended: false }));

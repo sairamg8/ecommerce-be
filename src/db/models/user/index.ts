@@ -44,6 +44,25 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
 
     return resetToken;
   }
+
+  private static readonly EXCLUDED_FIELDS = [
+    "password",
+    "deleted_at",
+    "reset_password_token",
+    "reset_password_expires",
+    "verification_token",
+    "refresh_tokens",
+  ] as const;
+
+  toSafeJSON() {
+    const values = this.get({ plain: true });
+
+    for (const field of User.EXCLUDED_FIELDS) {
+      delete values[field];
+    }
+
+    return values;
+  }
 }
 
 User.init(

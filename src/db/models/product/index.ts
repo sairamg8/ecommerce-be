@@ -14,9 +14,9 @@ class Product extends Model<
   declare id: CreationOptional<number>;
   declare category_id: CreationOptional<number>;
   declare name: CreationOptional<string>;
+  declare brand: CreationOptional<string>;
   declare slug: CreationOptional<string>;
   declare description: CreationOptional<string>;
-  declare short_description: CreationOptional<string>;
   declare price: CreationOptional<number>;
   declare sale_price: CreationOptional<number>;
   declare sku: CreationOptional<number>;
@@ -66,6 +66,18 @@ Product.init(
         },
       },
     },
+    brand: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: "Brand Should't be null",
+        },
+        notEmpty: {
+          msg: "Brand Should't be null",
+        },
+      },
+    },
     slug: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -79,18 +91,6 @@ Product.init(
       },
     },
     description: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-      validate: {
-        notNull: {
-          msg: "Description Should't be null",
-        },
-        notEmpty: {
-          msg: "Description Should't be null",
-        },
-      },
-    },
-    short_description: {
       type: DataTypes.TEXT,
       allowNull: false,
       validate: {

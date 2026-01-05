@@ -14,8 +14,12 @@ export const validate = (schema: ZodObject) => {
       next();
     } catch (error) {
       if (error instanceof ZodError)
-        throw new ValidationError("Auth Validation Failed11111", error.issues);
-      throw new ValidationError("Auth Validation Failed", error);
+        throw new ValidationError(
+          "Auth Validation Failed11111",
+          "ZODError",
+          error.flatten
+        );
+      throw new ValidationError("Auth Validation Failed");
     }
   };
 };

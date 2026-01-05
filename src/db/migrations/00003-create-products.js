@@ -36,6 +36,10 @@ module.exports = {
         type: Sequelize.STRING(250),
         allowNull: false
       },
+      brand: {
+        type: Sequelize.STRING(250),
+        allowNull: false
+      },
       slug: {
         type: Sequelize.STRING(250),
         allowNull: false,
@@ -43,10 +47,6 @@ module.exports = {
       },
       description: {
         type: Sequelize.TEXT,
-        allowNull: true
-      },
-      short_description: {
-        type: Sequelize.STRING(500),
         allowNull: true
       },
       price: {

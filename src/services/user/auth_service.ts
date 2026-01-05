@@ -56,11 +56,11 @@ const sendResetPasswordEmail = async (email: string, url: string) => {
 };
 
 export class AuthService {
-  static async Signup(data: SingUpT): Promise<AuthResponse> {
+  static async Signup(data: SingUpT) {
     const isUserExist = await User.findOne({ where: { email: data.email } });
 
     if (isUserExist)
-      throw new BadRequestError("User already exist with this email", 400);
+      throw new BadRequestError("User already exist with this email");
 
     const user = await User.create(data);
 
@@ -77,13 +77,7 @@ export class AuthService {
     await user.save();
 
     return {
-      data: {
-        id: user.id,
-        email: user.email,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        is_verified: user.is_verified,
-      },
+      userInfo: user.toSafeJSON(),
       accessToken: token,
       refreshToken: refresh,
     };
@@ -92,12 +86,11 @@ export class AuthService {
   static async Signin(data: SingInT): Promise<AuthResponse> {
     const isUserExist = await User.findOne({ where: { email: data.email } });
 
-    if (!isUserExist)
-      throw new UnauthorizedError("Email / Password Incorrect", 401);
+    if (!isUserExist) throw new UnauthorizedError("Email / Password Incorrect");
 
     const isPasswordMatch = await isUserExist.comparePassword(data.password);
     if (!isPasswordMatch)
-      throw new UnauthorizedError("Email / Password Incorrect", 401);
+      throw new UnauthorizedError("Email / Password Incorrect");
 
     const accessToken = generateAccessToken({
       email: isUserExist?.email,
@@ -110,13 +103,7 @@ export class AuthService {
     });
 
     return {
-      data: {
-        email: isUserExist.email,
-        first_name: isUserExist.first_name,
-        id: isUserExist.id,
-        is_verified: isUserExist.is_verified,
-        last_name: isUserExist.last_name,
-      },
+      userInfo: isUserExist.toSafeJSON(),
       accessToken,
       refreshToken,
     };
