@@ -7,8 +7,6 @@ export const DetailsController = {
 
     const details = await DetailsService.getDetails(identifier);
 
-    res.json({
-      data: details,
-    });
+    res.json(details);
   },
 };

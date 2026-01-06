@@ -18,9 +18,7 @@ export class ProductController {
 
     const data = await ProductService.FetchAllProducts(query, req.userInfo.id);
 
-    res.send({
-      data,
-    });
+    res.json(data);
   }
 
   static async AddProduct(req: Request, res: Response, next: NextFunction) {

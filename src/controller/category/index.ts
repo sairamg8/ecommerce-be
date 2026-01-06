@@ -15,10 +15,7 @@ export class Category {
   ) {
     const data = await CategoryService.FetchAllCategories(req.userInfo?.id);
 
-    res.json({
-      data,
-      from: "FetchAll Categories",
-    });
+    res.json(data);
   }
 
   static async createCategory(req: Request, res: Response, next: NextFunction) {
